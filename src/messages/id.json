@@ -1,0 +1,34 @@
+{
+  "auth": {
+    "login": {
+      "title": "Masuk",
+      "email": "Alamat Email",
+      "password": "Kata Sandi",
+      "submit": "Masuk",
+      "forgotPassword": "Lupa Kata Sandi?",
+      "noAccount": "Belum punya akun?",
+      "signUp": "Daftar"
+    },
+    "errors": {
+      "invalidCredentials": "Email atau kata sandi salah",
+      "UserNotFound": "Pengguna tidak ditemukan",
+      "userNotFound": "Pengguna tidak ditemukan",
+      "InvalidPassword": "Kata sandi tidak valid",
+      "invalidPassword": "Kata sandi tidak valid",
+      "RoleNotFound": "Peran pengguna tidak ditemukan",
+      "roleNotFound": "Peran pengguna tidak ditemukan",
+      "tooManyAttempts": "Terlalu banyak percobaan login. Silakan coba lagi nanti",
+      "accountLocked": "Akun Anda telah dikunci",
+      "default": "Terjadi kesalahan saat masuk"
+    },
+    "success": {
+      "loginSuccess": "Berhasil masuk",
+      "redirecting": "Mengalihkan..."
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Selamat datang di dashboard",
+    "sign_out": "Keluar"
+  }
+}
