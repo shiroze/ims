@@ -1,0 +1,6 @@
+/* ========= Tailwind CSS ========= */
+@import 'tailwindcss';
+
+/* ========= Cutsome CSS ========= */
+
+@import './structure/_general.css';

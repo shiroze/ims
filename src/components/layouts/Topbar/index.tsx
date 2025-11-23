@@ -3,22 +3,21 @@
 import Image, { StaticImageData } from 'next/image';
 import Link from 'next/link';
 import { ReactNode } from 'react';
-import { TbSearch } from 'react-icons/tb';
-import SimpleBar from 'simplebar-react';
-import SidenavToggle from './SidenavToggle';
+import SidenavToggle from './SideNavToggle';
 import ThemeModeToggle from './ThemeModeToggle';
-import {
-  LuBellRing,
-  LuClock,
-  LuGem,
-  LuHeart,
-  LuLogOut,
-  LuMail,
-  LuMessagesSquare,
-  LuMoveRight,
-  LuSettings,
-  LuShoppingBag,
-} from 'react-icons/lu';
+import { LogOut, BellRing } from 'lucide-react';
+// import {
+//   LuBellRing,
+//   LuClock,
+//   LuGem,
+//   LuHeart,
+//   LuLogOut,
+//   LuMail,
+//   LuMessagesSquare,
+//   LuMoveRight,
+//   LuSettings,
+//   LuShoppingBag,
+// } from 'react-icons/lu';
 
 import LanguageSwitcher from '~/components/LanguageSwitcher';
 import { useLocale } from 'next-intl';
@@ -32,17 +31,17 @@ type ProfileMenuItem = {
 };
 
 const profileMenu: ProfileMenuItem[] = [
+  // {
+  //   icon: <LuMail className="size-4" />,
+  //   label: 'Inbox',
+  //   href: '/mailbox',
+  //   badge: '15',
+  // },
+  // { icon: <LuMessagesSquare className="size-4" />, label: 'Chat', href: '/chat' },
+  // { icon: <LuGem className="size-4" />, label: 'Upgrade Pro', href: '/pricing' },
+  // { divider: true },
   {
-    icon: <LuMail className="size-4" />,
-    label: 'Inbox',
-    href: '/mailbox',
-    badge: '15',
-  },
-  { icon: <LuMessagesSquare className="size-4" />, label: 'Chat', href: '/chat' },
-  { icon: <LuGem className="size-4" />, label: 'Upgrade Pro', href: '/pricing' },
-  { divider: true },
-  {
-    icon: <LuLogOut className="size-4" />,
+    icon: <LogOut className="size-4" />,
     label: 'Sign Out',
     href: '/basic-logout',
   },
@@ -58,7 +57,7 @@ const Topbar = () => {
         <div className="flex items-center gap-5">
           <SidenavToggle />
 
-          <div className="lg:flex hidden items-center relative">
+          {/* <div className="lg:flex hidden items-center relative">
             <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
               <TbSearch className="text-base" />
             </div>
@@ -71,7 +70,7 @@ const Topbar = () => {
             <button type="button" className="absolute inset-y-0 end-0 flex items-center pe-4">
               <span className="ms-auto font-medium">⌘ K</span>
             </button>
-          </div>
+          </div> */}
         </div>
 
         <div className="flex items-center gap-3">
@@ -94,10 +93,10 @@ const Topbar = () => {
               type="button"
               className="hs-dropdown-toggle btn btn-icon size-8 hover:bg-default-150 rounded-full relative"
             >
-              <LuBellRing className="size-4.5" />
+              <BellRing className="size-4.5" />
               <span className="absolute end-0 top-0 size-1.5 bg-primary/90 rounded-full"></span>
             </button>
-            <div className="hs-dropdown-menu max-w-100 p-0">
+            {/* <div className="hs-dropdown-menu max-w-100 p-0">
               <div className="p-4 border-b border-default-200 flex items-center gap-2">
                 <h3 className="text-base text-default-800">Notifications</h3>
                 <span className="size-5 font-semibold bg-orange-500 rounded text-white flex items-center justify-center text-xs">
@@ -113,10 +112,10 @@ const Topbar = () => {
                   View All <LuMoveRight className="size-4" />
                 </button>
               </div>
-            </div>
+            </div> */}
           </div>
 
-          <div className="topbar-item">
+          {/* <div className="topbar-item">
             <button
               className="btn btn-icon size-8 hover:bg-default-150 rounded-full"
               type="button"
@@ -127,7 +126,7 @@ const Topbar = () => {
             >
               <LuSettings className="size-4.5" />
             </button>
-          </div>
+          </div> */}
 
           <div className="topbar-item hs-dropdown relative inline-flex">
             <button className="cursor-pointer bg-pink-100 rounded-full">

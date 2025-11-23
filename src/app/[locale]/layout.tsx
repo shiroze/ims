@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { DM_Sans, Tourney } from 'next/font/google';
 import NextTopLoader from 'nextjs-toploader';
 import { DEFAULT_PAGE_TITLE } from '~/helpers/constants';
-import favicon from "~/assets/images/favicon.ico"
+// import favicon from "~/assets/images/favicon.ico"
 
 import { redirect, notFound } from 'next/navigation';
 import ProvidersWrapper from '~/components/ProviderWrapper';
@@ -17,7 +17,7 @@ import '@mantine/dates/styles.css'; //if using mantine date picker features
 import 'mantine-react-table/styles.css'; //import MRT styles
 import 'flatpickr/dist/flatpickr.css';
 // import 'swiper/swiper-bundle.css';
-// import '~/assets/css/style.css';
+import '~/assets/css/style.css';
 
 const getdmSans = DM_Sans({
   variable: '--font-dm-sans',
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     template: '%s | Inventory Management System',
   },
   icons: {
-    icon: favicon.src,
+    // icon: favicon.src,
   },
 };
 

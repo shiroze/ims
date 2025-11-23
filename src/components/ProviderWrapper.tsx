@@ -1,3 +1,4 @@
+'use client'
 import { createTheme, MantineProvider } from '@mantine/core';
 import React, { useEffect } from 'react';
 
