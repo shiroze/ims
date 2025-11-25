@@ -138,16 +138,46 @@ export default function SignIn() {
 
   return (
     <div className={'wrapper'}>
-      <Paper className={'form'}>
+      <form className={'form'} onSubmit={handleSubmit}>
         <Title order={2} className={'title'}>
           Welcome back to IMS!
         </Title>
+        {error && (
+          <div className="mb-4 p-3 bg-danger/10 border border-danger/20 rounded-md">
+            <p className="text-danger text-sm">{error}</p>
+          </div>
+        )}
 
-        <TextInput label="Email address" placeholder="hello@gmail.com" size="md" radius="md" />
-        <PasswordInput label="Password" placeholder="Your password" mt="md" size="md" radius="md" />
+        <TextInput 
+          label="Username"
+          id="Username"
+          placeholder="Enter Username or email" 
+          size="md" radius="md"
+          value={username}
+          onChange={(e) => {
+            setUsername(e.target.value);
+            setError(null);
+          }}
+          disabled={isLoading || isSubmitting}
+        />
+        <PasswordInput 
+          label="Password"
+          id="Password"
+          mt="md" size="md" radius="md" 
+          placeholder="Enter Password"
+          value={password}
+          onChange={(e) => {
+            setPassword(e.target.value);
+            setError(null);
+          }}
+          disabled={isLoading || isSubmitting}
+        />
         <Checkbox label="Keep me logged in" mt="xl" size="md" />
-        <Button fullWidth mt="xl" size="md" radius="md">
-          Login
+        <Button type="submit" fullWidth mt="xl" size="md" radius="md"
+          className="disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={isLoading || isSubmitting}
+        >
+          {isLoading ? tSuccess('redirecting') : t('submit')}
         </Button>
 
         <Text ta="center" mt="md">
@@ -156,7 +186,7 @@ export default function SignIn() {
             Register
           </Anchor>
         </Text>
-      </Paper>
+      </form>
     </div>
     
     // <div className="relative flex flex-row w-full overflow-hidden bg-gradient-to-r from-blue-900 h-screen to-blue-800 dark:to-blue-900 dark:from-blue-950">

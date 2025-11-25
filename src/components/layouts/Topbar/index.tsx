@@ -6,18 +6,8 @@ import { ReactNode } from 'react';
 import SidenavToggle from './SideNavToggle';
 import ThemeModeToggle from './ThemeModeToggle';
 import { LogOut, BellRing } from 'lucide-react';
-// import {
-//   LuBellRing,
-//   LuClock,
-//   LuGem,
-//   LuHeart,
-//   LuLogOut,
-//   LuMail,
-//   LuMessagesSquare,
-//   LuMoveRight,
-//   LuSettings,
-//   LuShoppingBag,
-// } from 'react-icons/lu';
+import UsFlag from '~/assets/images/flags/us.jpg';
+import IdFlag from '~/assets/images/flags/id.png';
 
 import LanguageSwitcher from '~/components/LanguageSwitcher';
 import { useLocale } from 'next-intl';
@@ -49,7 +39,7 @@ const profileMenu: ProfileMenuItem[] = [
 
 const Topbar = () => {
   const locale = useLocale();
-  const currentFlag = locale === 'id' ? "IdFlag" : "UsFlag"; // You can add Indonesian flag here when available
+  const currentFlag = locale === 'id' ? IdFlag : UsFlag; // You can add Indonesian flag here when available
 
   return (
     <div className="app-header min-h-topbar-height flex items-center sticky top-0 z-30 bg-(--topbar-background) border-b border-default-200">

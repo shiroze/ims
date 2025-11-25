@@ -1,15 +1,16 @@
 'use client'
 import { createTheme, MantineProvider } from '@mantine/core';
-import React, { useEffect } from 'react';
+import type { ReactNode } from 'react';
+import LayoutProvider from '~/context/useLayoutContext';
 
 const theme = createTheme({
   /** Your theme override here */
 });
 
-const ProvidersWrapper = ({ children }: { children: React.ReactNode }) => {
+const ProvidersWrapper = ({ children }: { children: ReactNode }) => {
   return (
     <MantineProvider theme={theme}>
-      {children}
+      <LayoutProvider>{children}</LayoutProvider>
     </MantineProvider>
   );
 }

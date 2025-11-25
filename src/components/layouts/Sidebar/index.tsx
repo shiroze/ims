@@ -40,7 +40,7 @@ const MenuItem = ({ item, collapsed, level = 0 }: MenuItemProps) => {
   );
   const hasChildren = item.children && item.children.length > 0;
   const isActive = isItemActive(item, pathname);
-  const Icon = item.icon;
+  const Icon = item.icon?.replace('fas fa-', ''); // Example: 'fas fa-user' -> 'user'
 
   if (item.isTitle) {
     if (collapsed) return null;
@@ -58,29 +58,6 @@ const MenuItem = ({ item, collapsed, level = 0 }: MenuItemProps) => {
       </Text>
     );
   }
-
-  const content = (
-    <Group gap="xs" style={{ paddingLeft: `${level * 16}px` }}>
-      {Icon && (
-        <DynamicIcon
-          name={Icon}
-          size={20}
-          style={{ flexShrink: 0 }}
-        />
-      )}
-      {!collapsed && <Text size="sm">{item.label}</Text>}
-      {hasChildren && !collapsed && (
-        <IconChevronRight
-          size={16}
-          style={{
-            marginLeft: 'auto',
-            transform: opened ? 'rotate(90deg)' : 'none',
-            transition: 'transform 0.2s',
-          }}
-        />
-      )}
-    </Group>
-  );
 
   if (hasChildren) {
     const navLinkContent = (
@@ -105,20 +82,8 @@ const MenuItem = ({ item, collapsed, level = 0 }: MenuItemProps) => {
             />
           ) : undefined
         }
-      >
-        {!collapsed && (
-          <Collapse in={opened}>
-            {item.children?.map((child) => (
-              <MenuItem
-                key={child.key}
-                item={child}
-                collapsed={collapsed}
-                level={level + 1}
-              />
-            ))}
-          </Collapse>
-        )}
-      </NavLink>
+        style={{ paddingLeft: collapsed ? undefined : `${level * 16 + 12}px` }}
+      />
     );
 
     if (collapsed) {
@@ -157,7 +122,23 @@ const MenuItem = ({ item, collapsed, level = 0 }: MenuItemProps) => {
       );
     }
 
-    return navLinkContent;
+    return (
+      <Box>
+        {navLinkContent}
+        <Collapse in={opened}>
+          <Box pl={level * 16 + 24}>
+            {item.children?.map((child) => (
+              <MenuItem
+                key={child.key}
+                item={child}
+                collapsed={collapsed}
+                level={level + 1}
+              />
+            ))}
+          </Box>
+        </Collapse>
+      </Box>
+    );
   }
 
   const linkContent = (

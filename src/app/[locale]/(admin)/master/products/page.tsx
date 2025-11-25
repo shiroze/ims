@@ -2,17 +2,23 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { useSession } from 'next-auth/react'
-import Button from '@mui/material/Button'
-import IconButton from '@mui/material/IconButton'
-import Menu from '@mui/material/Menu'
-import MenuItem from '@mui/material/MenuItem'
-import Link from 'next/link'
+// import Button from '@mui/material/Button'
+// import ActionIcon from '@mui/material/ActionIcon'
+// import Menu from '@mui/material/Menu'
+// import MenuItem from '@mui/material/MenuItem'
 import {
-  MoreVert,
-  Visibility,
-  Edit,
-  Delete,
-} from '@mui/icons-material'
+  Button,
+  ActionIcon,
+  Menu,
+  MenuItem
+} from '@mantine/core'
+import Link from 'next/link'
+// import {
+//   MoreVert,
+//   Visibility,
+//   Edit,
+//   Delete,
+// } from '@mui/icons-material'
 import { FilterableColumn, FilterableTable } from '~/components/filterable-table'
 
 type ProductRow = {
@@ -171,13 +177,13 @@ export default function ProductsPage() {
 
           return (
             <div>
-              <IconButton
+              {/* <ActionIcon
                 size="small"
                 onClick={(e) => handleMenuOpen(row.itemId, e)}
                 aria-label="more actions"
               >
                 <MoreVert fontSize="small" />
-              </IconButton>
+              </ActionIcon>
               <Menu
                 anchorEl={anchorEl[row.itemId] || undefined}
                 open={menuOpen}
@@ -225,7 +231,7 @@ export default function ProductsPage() {
                     <span>Delete</span>
                   </MenuItem>
                 )}
-              </Menu>
+              </Menu> */}
             </div>
           )
         },
