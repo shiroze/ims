@@ -8,7 +8,6 @@ import {
   ScrollArea,
   TextInput,
   Text,
-  Group,
   Collapse,
   Tooltip,
   Box,
@@ -40,7 +39,7 @@ const MenuItem = ({ item, collapsed, level = 0 }: MenuItemProps) => {
   );
   const hasChildren = item.children && item.children.length > 0;
   const isActive = isItemActive(item, pathname);
-  const Icon = item.icon?.replace('fas fa-', ''); // Example: 'fas fa-user' -> 'user'
+  const Icon = item.icon?.replace('fas fa-', '');
 
   if (item.isTitle) {
     if (collapsed) return null;
@@ -68,7 +67,7 @@ const MenuItem = ({ item, collapsed, level = 0 }: MenuItemProps) => {
         label={collapsed ? undefined : item.label}
         leftSection={
           Icon ? (
-            <DynamicIcon name={Icon} size={20} />
+            <DynamicIcon name={Icon as any} size={20} />
           ) : undefined
         }
         rightSection={
@@ -141,14 +140,19 @@ const MenuItem = ({ item, collapsed, level = 0 }: MenuItemProps) => {
     );
   }
 
+  // Ensure href is absolute path (starts with /)
+  const normalizedHref = item.href 
+    ? (item.href.startsWith('/') ? item.href : `/${item.href}`)
+    : '#';
+
   const linkContent = (
     <NavLink
       component={Link}
-      href={item.href ?? '#'}
+      href={normalizedHref}
       active={isActive}
       label={collapsed ? undefined : item.label}
       leftSection={
-        Icon ? <DynamicIcon name={Icon} size={20} /> : undefined
+        Icon ? <DynamicIcon name={Icon as any} size={20} /> : undefined
       }
     />
   );
@@ -189,12 +193,12 @@ const AppMenu = ({ collapsed }: { collapsed: boolean }) => {
 
   const filteredItems = searchQuery
     ? items.filter(
-        (item) =>
-          item.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          item.children?.some((child) =>
-            child.label.toLowerCase().includes(searchQuery.toLowerCase())
-          )
-      )
+      (item) =>
+        item.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.children?.some((child) =>
+          child.label.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+    )
     : items;
 
   if (loading) {
@@ -242,23 +246,68 @@ const AppMenu = ({ collapsed }: { collapsed: boolean }) => {
 };
 
 const Sidebar = () => {
-  const { sidenav } = useLayoutContext();
+  const { sidenav, updateSettings } = useLayoutContext();
+  const [isMobile, setIsMobile] = useState(false);
   const collapsed = sidenav.size === 'sm' || sidenav.size === 'hover';
+  const isOffcanvas = sidenav.size === 'offcanvas';
+
+  // Detect mobile on client-side only
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  const handleOverlayClick = () => {
+    updateSettings({
+      sidenav: {
+        ...sidenav,
+        size: 'offcanvas',
+      },
+    });
+  };
 
   return (
-    <Box
-      style={{
-        width: collapsed ? 80 : 280,
-        height: '100vh',
-        transition: 'width 0.3s ease',
-        borderRight: '1px solid var(--mantine-color-default-border)',
-        display: 'flex',
-        flexDirection: 'column',
-        backgroundColor: 'var(--mantine-color-body)',
-      }}
-    >
-      <AppMenu collapsed={collapsed} />
-    </Box>
+    <>
+      {/* Mobile overlay */}
+      {!isOffcanvas && isMobile && (
+        <Box
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            zIndex: 40,
+          }}
+          onClick={handleOverlayClick}
+        />
+      )}
+
+      <Box
+        className="app-sidebar"
+        style={{
+          width: collapsed ? 80 : 280,
+          height: '100vh',
+          position: isMobile ? 'fixed' : 'relative',
+          left: isOffcanvas && isMobile ? -280 : 0,
+          top: 0,
+          zIndex: 50,
+          transition: 'all 0.3s ease',
+          borderRight: '1px solid var(--mantine-color-default-border)',
+          display: 'flex',
+          flexDirection: 'column',
+          backgroundColor: 'var(--mantine-color-body)',
+        }}
+      >
+        <AppMenu collapsed={collapsed} />
+      </Box>
+    </>
   );
 };
 

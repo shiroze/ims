@@ -3,23 +3,58 @@
 import { UnstyledButton, Tooltip } from '@mantine/core';
 import { IconMenu2, IconX } from '@tabler/icons-react';
 import { useLayoutContext } from '~/context/useLayoutContext';
+import { useEffect, useState } from 'react';
 
 const SideNavToggle = () => {
   const { sidenav, updateSettings } = useLayoutContext();
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect if we're on mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   const isCollapsed = sidenav.size === 'sm' || sidenav.size === 'hover';
+  const isSidebarHidden = sidenav.size === 'offcanvas';
 
   const toggleSidebar = () => {
-    const newSize = isCollapsed ? 'default' : 'sm';
-    updateSettings({
-      sidenav: {
-        ...sidenav,
-        size: newSize,
-      },
-    });
+    if (isMobile) {
+      // On mobile: toggle between 'offcanvas' (hidden) and 'default' (shown)
+      const newSize = isSidebarHidden ? 'default' : 'offcanvas';
+      updateSettings({
+        sidenav: {
+          ...sidenav,
+          size: newSize,
+        },
+      });
+    } else {
+      // On desktop: toggle between 'sm' (collapsed) and 'default' (expanded)
+      const newSize = isCollapsed ? 'default' : 'sm';
+      updateSettings({
+        sidenav: {
+          ...sidenav,
+          size: newSize,
+        },
+      });
+    }
   };
 
+  // On desktop: always show hamburger
+  // On mobile: show X when sidebar is visible, hamburger when hidden
+  const showXIcon = isMobile && !isSidebarHidden;
+
+  const tooltipLabel = isMobile
+    ? (isSidebarHidden ? 'Open menu' : 'Close menu')
+    : (isCollapsed ? 'Expand sidebar' : 'Collapse sidebar');
+
   return (
-    <Tooltip label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'} withArrow>
+    <Tooltip label={tooltipLabel} withArrow>
       <UnstyledButton
         onClick={toggleSidebar}
         style={{
@@ -39,7 +74,7 @@ const SideNavToggle = () => {
           },
         }}
       >
-        {isCollapsed ? <IconMenu2 size={20} /> : <IconX size={20} />}
+        {showXIcon ? <IconX size={20} /> : <IconMenu2 size={20} />}
       </UnstyledButton>
     </Tooltip>
   );

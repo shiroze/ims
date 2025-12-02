@@ -86,10 +86,10 @@ export function FilterableTable<T extends Record<string, unknown>>({
   }
 
   return (
-    <Box className="rounded-2xl border bg-white shadow-sm">
+    <Box className="rounded-2xl border shadow-sm filterable-table-wrapper">
       <ScrollArea>
         <Table highlightOnHover>
-          <Table.Thead className="bg-slate-50">
+          <Table.Thead>
             <Table.Tr>
               {columns.map((column, index) => {
                 const columnId = column.id ?? String(column.accessor ?? index)
@@ -98,7 +98,7 @@ export function FilterableTable<T extends Record<string, unknown>>({
                 return (
                   <Table.Th
                     key={columnId}
-                    className={`p-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 ${column.className ?? ''}`}
+                    className={`p-4 text-left text-xs font-semibold uppercase tracking-wide ${column.className ?? ''}`}
                   >
                     <Group align="flex-start" gap="xs">
                       <Text size="xs">{column.header}</Text>
@@ -120,13 +120,13 @@ export function FilterableTable<T extends Record<string, unknown>>({
           <Table.Tbody>
             {paginatedData.length === 0 ? (
               <Table.Tr>
-                <Table.Td colSpan={columns.length} className="p-12 text-center text-sm text-slate-500">
+                <Table.Td colSpan={columns.length} className="p-12 text-center text-sm">
                   {emptyMessage}
                 </Table.Td>
               </Table.Tr>
             ) : (
               paginatedData.map((row, rowIndex) => (
-                <Table.Tr key={`${rowIndex}-${page}`} className="hover:bg-slate-50">
+                <Table.Tr key={`${rowIndex}-${page}`}>
                   {columns.map((column, colIndex) => {
                     const columnId = column.id ?? String(column.accessor ?? colIndex)
                     const cellClass = column.className ?? ''

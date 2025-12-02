@@ -15,7 +15,7 @@ type Language = {
 
 const languages: Language[] = [
   { code: 'en', label: 'English', flag: UsFlag },
-  { code: 'id', label: 'Indonesia', flag: IdFlag }, // Using US flag as placeholder - you can replace with Indonesian flag if available
+  { code: 'id', label: 'Indonesia', flag: IdFlag },
 ];
 
 export default function LanguageSwitcher() {
@@ -38,15 +38,14 @@ export default function LanguageSwitcher() {
           key={lang.code}
           type="button"
           onClick={() => handleChange(lang.code)}
-          className={`flex items-center gap-x-3.5 py-1.5 px-3 text-default-600 hover:bg-default-150 rounded font-medium w-full text-left transition-colors ${
-            locale === lang.code ? 'bg-default-100 text-primary' : ''
-          }`}
+          className={`flex items-center gap-x-3.5 py-1.5 px-3 text-default-600 hover:bg-default-150 rounded font-medium w-full text-left transition-colors cursor-pointer ${locale === lang.code ? 'bg-default-100 text-primary' : ''
+            }`}
           role="menuitem"
         >
-          <Image 
-            src={lang.flag} 
-            alt={lang.label} 
-            className="size-4 rounded" 
+          <Image
+            src={lang.flag}
+            alt={lang.label}
+            className="size-4 rounded"
             width={16}
             height={16}
           />

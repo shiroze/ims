@@ -2,161 +2,142 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Button } from '~/components/ui/button'
-import { Input } from '~/components/ui/input'
-import { Label } from '~/components/ui/label'
-import { Switch } from '~/components/ui/switch'
-import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
-import { useToast } from '~/hooks/use-toast'
-import { ArrowLeft } from 'lucide-react'
+import { Button, Card, Group, Stack, TextInput, Title, Switch, Text } from '@mantine/core'
+import { notifications } from '@mantine/notifications'
+import { IconArrowLeft } from '@tabler/icons-react'
 import Link from 'next/link'
+import { post } from '~/utils/api'
+import type { Product } from '~/types/product'
 
 export default function CreateProductPage() {
   const router = useRouter()
-  const { toast } = useToast()
-  const [formData, setFormData] = useState({
-    sku: '',
-    name: '',
-    category: '',
-    brand: '',
-    unit: '',
-    isStock: true,
+  const [saving, setSaving] = useState(false)
+  const [formData, setFormData] = useState<Product>({
+    ItemId: '',
+    SKU: '',
+    ItemName: '',
+    CategoryName: '',
+    BrandName: '',
+    UoM: '',
+    IsActive: true,
   })
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-
-    try {
-      const response = await fetch('/api/products', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      })
-
-      if (response.ok) {
-        toast({
-          title: "Success",
-          description: "Product created successfully",
-        })
-        router.push('/master/products')
-      } else {
-        throw new Error('Failed to create product')
-      }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to create product",
-        variant: "destructive",
-      })
+  const handleChange =
+    (field: keyof Product) => (event: React.ChangeEvent<HTMLInputElement>) => {
+      setFormData((prev) => ({
+        ...prev,
+        [field]: event.target.value,
+      }))
     }
-  }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setFormData(prev => ({
-      ...prev,
-      [name]: value,
-    }))
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault()
+    setSaving(true)
+    try {
+      await post('/api/v1/products', formData)
+      notifications.show({
+        title: 'Success',
+        message: 'Product created successfully',
+        color: 'green',
+      })
+      router.push('/master/products')
+    } catch (error: any) {
+      notifications.show({
+        title: 'Error',
+        message: error.response?.data?.error || 'Failed to create product',
+        color: 'red',
+      })
+    } finally {
+      setSaving(false)
+    }
   }
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center space-x-4">
-        <Link href="/dashboard/products">
-          <Button variant="outline" size="icon">
-            <ArrowLeft className="h-4 w-4" />
+      <Group>
+        <Link href="/master/products">
+          <Button variant="outline" leftSection={<IconArrowLeft size={16} />}>
+            Back
           </Button>
         </Link>
-        <h1 className="text-3xl font-bold">Create Product</h1>
-      </div>
+        <Title order={2}>Create Product</Title>
+      </Group>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Product Information</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="sku">SKU</Label>
-                <Input
-                  id="sku"
-                  name="sku"
-                  value={formData.sku}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="name">Name</Label>
-                <Input
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="category">Category</Label>
-                <Input
-                  id="category"
-                  name="category"
-                  value={formData.category}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="brand">Brand</Label>
-                <Input
-                  id="brand"
-                  name="brand"
-                  value={formData.brand}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="unit">Unit</Label>
-                <Input
-                  id="unit"
-                  name="unit"
-                  value={formData.unit}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="isStock">Stock Item</Label>
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    id="isStock"
-                    checked={formData.isStock}
-                    onCheckedChange={(checked) =>
-                      setFormData(prev => ({ ...prev, isStock: checked }))
-                    }
-                  />
-                  <Label htmlFor="isStock">Track inventory for this item</Label>
-                </div>
-              </div>
+      <Card shadow="sm" padding="lg" radius="md" withBorder>
+        <form onSubmit={handleSubmit}>
+          <Stack gap="md">
+            <div>
+              <Title order={4}>Product Information</Title>
+              <Text size="sm" c="dimmed">
+                Provide basic details about the product you want to add.
+              </Text>
             </div>
 
-            <div className="flex justify-end space-x-4">
-              <Link href="/dashboard/products">
+            <Group grow>
+              <TextInput
+                label="SKU"
+                placeholder="Enter SKU"
+                value={formData.SKU}
+                onChange={handleChange('SKU')}
+                required
+              />
+              <TextInput
+                label="Product Name"
+                placeholder="Enter product name"
+                value={formData.ItemName}
+                onChange={handleChange('ItemName')}
+                required
+              />
+            </Group>
+
+            <Group grow>
+              <TextInput
+                label="Category"
+                placeholder="Enter category"
+                value={formData.CategoryName}
+                onChange={handleChange('CategoryName')}
+                required
+              />
+              <TextInput
+                label="Brand"
+                placeholder="Enter brand"
+                value={formData.BrandName}
+                onChange={handleChange('BrandName')}
+                required
+              />
+            </Group>
+
+            <TextInput
+              label="Unit of Measure"
+              placeholder="Enter unit (e.g., PCS, KG)"
+              value={formData.UoM}
+              onChange={handleChange('UoM')}
+              required
+              style={{ maxWidth: '50%' }}
+            />
+
+            <Switch
+              label="Active Status"
+              description="Enable this product for use"
+              checked={formData.IsActive}
+              onChange={(event) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  IsActive: event.currentTarget.checked,
+                }))
+              }
+            />
+
+            <Group justify="flex-end" mt="md">
+              <Link href="/master/products">
                 <Button variant="outline">Cancel</Button>
               </Link>
-              <Button type="submit">Create Product</Button>
-            </div>
-          </form>
-        </CardContent>
+              <Button type="submit" loading={saving}>
+                Create Product
+              </Button>
+            </Group>
+          </Stack>
+        </form>
       </Card>
     </div>
   )

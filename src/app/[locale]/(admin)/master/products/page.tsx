@@ -1,25 +1,13 @@
 "use client"
 
 import { useEffect, useMemo, useState } from 'react'
-import { useSession } from 'next-auth/react'
-// import Button from '@mui/material/Button'
-// import ActionIcon from '@mui/material/ActionIcon'
-// import Menu from '@mui/material/Menu'
-// import MenuItem from '@mui/material/MenuItem'
-import {
-  Button,
-  ActionIcon,
-  Menu,
-  MenuItem
-} from '@mantine/core'
+import { useRouter } from 'next/navigation'
+import { Button, ActionIcon, Menu } from '@mantine/core'
+import { IconDots, IconEye, IconEdit, IconTrash } from '@tabler/icons-react'
 import Link from 'next/link'
-// import {
-//   MoreVert,
-//   Visibility,
-//   Edit,
-//   Delete,
-// } from '@mui/icons-material'
 import { FilterableColumn, FilterableTable } from '~/components/filterable-table'
+import { usePermissions } from '~/hooks/usePermissions'
+import { get, del } from '~/utils/api'
 
 type ProductRow = {
   itemId: string
@@ -32,69 +20,47 @@ type ProductRow = {
 }
 
 export default function ProductsPage() {
-  const { data: session } = useSession()
+  const router = useRouter()
+  const { IsView, IsAdd, IsEdit, IsDelete, loading } = usePermissions('ItemGoods')
   const [products, setProducts] = useState<ProductRow[]>([])
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
-  const [anchorEl, setAnchorEl] = useState<Record<string, HTMLElement | null>>({})
   const [deleteId, setDeleteId] = useState<string | null>(null)
+  const [isMounted, setIsMounted] = useState(false)
 
-  const permissions = (session?.user as any)?.permissions || []
-
-  // Check permissions - try multiple possible menu code formats
-  const canView =
-    permissions.some((p: string) =>
-      /^(products?|item|master):view$/i.test(p)
-    ) || permissions.includes('products:view') || permissions.includes('product:view')
-  const canEdit =
-    permissions.some((p: string) =>
-      /^(products?|item|master):edit$/i.test(p)
-    ) || permissions.includes('products:edit') || permissions.includes('product:edit')
-  const canDelete =
-    permissions.some((p: string) =>
-      /^(products?|item|master):delete$/i.test(p)
-    ) || permissions.includes('products:delete') || permissions.includes('product:delete')
-
-  // Debug: Log permissions to console
+  // Prevent hydration mismatch
   useEffect(() => {
-    if (session?.user) {
-      console.log('User permissions:', permissions)
-      console.log('Session user:', session.user)
-      console.log('Can View:', canView, 'Can Edit:', canEdit, 'Can Delete:', canDelete)
-    }
-  }, [session, permissions, canView, canEdit, canDelete])
-
-  useEffect(() => {
-    void fetchProducts()
+    setIsMounted(true)
   }, [])
+
+  // Note: No auto-redirect - just show access denied if no permission
+
+  useEffect(() => {
+    if (IsView) {
+      void fetchProducts()
+    }
+  }, [IsView])
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch('/api/v1/products')
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch products')
-      }
-
-      const data = await response.json()
+      const data = await get<any[]>('/api/v1/products')
 
       const normalizedProducts: ProductRow[] = (Array.isArray(data) ? data : []).map(
         (product: Record<string, unknown>) => ({
           itemId: String(
             product.ItemId ??
-              product.itemId ??
-              product.id ??
-              product.sku ??
-              ''
+            product.itemId ??
+            product.id ??
+            product.sku ??
+            ''
           ),
           sku: String(product.SKU ?? product.sku ?? product.ItemId ?? product.itemId ?? ''),
           itemName: String(product.ItemName ?? product.itemName ?? product.name ?? ''),
           uom: String(product.UoM ?? product.uom ?? product.UomId ?? product.uomId ?? ''),
           isActive: Boolean(
             product.IsActive ??
-              product.isActive ??
-              product.Status ??
-              product.status ??
-              true
+            product.isActive ??
+            product.Status ??
+            product.status ??
+            true
           ),
           accessBy: String(product.AccessBy ?? product.UpdatedBy ?? product.CreatedBy ?? '') || null,
           accessTime: product.AccessTime
@@ -108,39 +74,20 @@ export default function ProductsPage() {
       )
 
       setProducts(normalizedProducts)
-      setErrorMessage(null)
     } catch (error) {
       console.error(error)
-      setErrorMessage('Failed to fetch products. Please try again.')
     }
-  }
-
-  const handleMenuOpen = (itemId: string, event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl((prev) => ({ ...prev, [itemId]: event.currentTarget }))
-  }
-
-  const handleMenuClose = (itemId: string) => {
-    setAnchorEl((prev) => ({ ...prev, [itemId]: null }))
   }
 
   const handleDelete = async () => {
     if (!deleteId) return
 
     try {
-      const response = await fetch(`/api/v1/products/${deleteId}`, {
-        method: 'DELETE',
-      })
-
-      if (response.ok) {
-        void fetchProducts()
-        setDeleteId(null)
-      } else {
-        const error = await response.json()
-        throw new Error(error.error || 'Failed to delete product')
-      }
+      await del(`/api/v1/products/${deleteId}`)
+      void fetchProducts()
+      setDeleteId(null)
     } catch (error: any) {
       console.error(error)
-      setErrorMessage(error.message || 'Failed to delete product. Please try again.')
       setDeleteId(null)
     }
   }
@@ -168,71 +115,40 @@ export default function ProductsPage() {
         header: 'Actions',
         className: 'w-24',
         render: (row) => {
-          const hasAnyPermission = canView || canEdit || canDelete
+          const hasAnyPermission = IsEdit || IsDelete
           if (!hasAnyPermission) {
             return <span className="text-muted-foreground text-sm">—</span>
           }
 
-          const menuOpen = Boolean(anchorEl[row.itemId])
-
           return (
-            <div>
-              {/* <ActionIcon
-                size="small"
-                onClick={(e) => handleMenuOpen(row.itemId, e)}
-                aria-label="more actions"
-              >
-                <MoreVert fontSize="small" />
-              </ActionIcon>
-              <Menu
-                anchorEl={anchorEl[row.itemId] || undefined}
-                open={menuOpen}
-                onClose={() => handleMenuClose(row.itemId)}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'right',
-                }}
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-              >
-                {canView && (
-                  <MenuItem
+            <Menu shadow="md" width={160}>
+              <Menu.Target>
+                <ActionIcon variant="subtle" color="gray">
+                  <IconDots size={16} />
+                </ActionIcon>
+              </Menu.Target>
+
+              <Menu.Dropdown>
+                {IsEdit && (
+                  <Menu.Item
                     component={Link}
-                    href={`/dashboard/products/view/${row.itemId}`}
-                    onClick={() => handleMenuClose(row.itemId)}
-                    sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+                    href={`/master/products/edit/${row.itemId}`}
+                    leftSection={<IconEdit size={16} />}
                   >
-                    <Visibility fontSize="small" />
-                    <span>View</span>
-                  </MenuItem>
+                    Edit
+                  </Menu.Item>
                 )}
-                {canEdit && (
-                  <MenuItem
-                    component={Link}
-                    href={`/dashboard/products/edit/${row.itemId}`}
-                    onClick={() => handleMenuClose(row.itemId)}
-                    sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+                {IsDelete && (
+                  <Menu.Item
+                    leftSection={<IconTrash size={16} />}
+                    color="red"
+                    onClick={() => setDeleteId(row.itemId)}
                   >
-                    <Edit fontSize="small" />
-                    <span>Edit</span>
-                  </MenuItem>
+                    Delete
+                  </Menu.Item>
                 )}
-                {canDelete && (
-                  <MenuItem
-                    onClick={() => {
-                      setDeleteId(row.itemId)
-                      handleMenuClose(row.itemId)
-                    }}
-                    sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'error.main' }}
-                  >
-                    <Delete fontSize="small" />
-                    <span>Delete</span>
-                  </MenuItem>
-                )}
-              </Menu> */}
-            </div>
+              </Menu.Dropdown>
+            </Menu>
           )
         },
       },
@@ -264,11 +180,10 @@ export default function ProductsPage() {
         filterValue: (row) => (row.isActive ? 'active' : 'inactive'),
         render: (row) => (
           <span
-            className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${
-              row.isActive
-                ? 'bg-emerald-50 text-emerald-700'
-                : 'bg-slate-100 text-slate-500'
-            }`}
+            className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${row.isActive
+              ? 'bg-emerald-50 text-emerald-700'
+              : 'bg-slate-100 text-slate-500'
+              }`}
           >
             {row.isActive ? 'Active' : 'Inactive'}
           </span>
@@ -286,12 +201,32 @@ export default function ProductsPage() {
         render: (row) => <span className="text-sm">{formatDate(row.accessTime)}</span>,
       },
     ],
-    [anchorEl, canView, canEdit, canDelete]
+    [IsEdit, IsDelete]
   )
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-muted-foreground">Loading permissions...</p>
+      </div>
+    )
+  }
+
+  if (!IsView) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <p className="text-red-600 font-semibold mb-2">Access Denied</p>
+          <p className="text-muted-foreground">You do not have permission to view this page.</p>
+          <p className="text-sm text-muted-foreground mt-2">Redirecting to dashboard...</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-3 rounded-2xl border border-slate-100 bg-white p-6 shadow-sm md:flex-row md:items-center md:justify-between">
+      <div className="flex flex-col gap-3 rounded-2xl border border-slate-100 p-6 shadow-sm md:flex-row md:items-center md:justify-between">
         <div>
           <p className="text-sm uppercase tracking-wide text-muted-foreground">Inventory</p>
           <h1 className="text-3xl font-semibold text-foreground">Products</h1>
@@ -299,22 +234,18 @@ export default function ProductsPage() {
             Review catalog items and keep your active list up to date.
           </p>
         </div>
-        <Link href="/dashboard/products/create" className="self-end md:self-auto">
-          <Button
-            variant="contained"
-            color="primary"
-            className="rounded-full px-6 py-2 text-sm font-semibold normal-case"
-          >
-            + New Product
-          </Button>
-        </Link>
+        {IsAdd && (
+          <Link href="/dashboard/products/create" className="self-end md:self-auto">
+            <Button
+              variant="filled"
+              color="blue"
+              className="rounded-full px-6 py-2 text-sm font-semibold normal-case"
+            >
+              + New Product
+            </Button>
+          </Link>
+        )}
       </div>
-
-      {errorMessage ? (
-        <div className="rounded-lg border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
-          {errorMessage}
-        </div>
-      ) : null}
 
       <FilterableTable columns={columns} data={products} emptyMessage="No products found" />
 
@@ -328,15 +259,15 @@ export default function ProductsPage() {
             </p>
             <div className="flex justify-end gap-2">
               <Button
-                variant="outlined"
+                variant="outline"
                 onClick={() => setDeleteId(null)}
                 className="normal-case"
               >
                 Cancel
               </Button>
               <Button
-                variant="contained"
-                color="error"
+                variant="filled"
+                color="red"
                 onClick={handleDelete}
                 className="normal-case"
               >

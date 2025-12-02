@@ -1,23 +1,11 @@
 'use client';
 
-import { UnstyledButton, Tooltip } from '@mantine/core';
-import { IconSun, IconMoon } from '@tabler/icons-react';
+import { Menu } from '@mantine/core';
+import { IconSun, IconMoon, IconDeviceDesktop } from '@tabler/icons-react';
 import { useLayoutContext, getSystemTheme } from '~/context/useLayoutContext';
 
 const ThemeModeToggle = () => {
   const { theme, updateSettings } = useLayoutContext();
-
-  const toggleTheme = () => {
-    let newTheme: 'light' | 'dark' | 'system';
-    if (theme === 'light') {
-      newTheme = 'dark';
-    } else if (theme === 'dark') {
-      newTheme = 'system';
-    } else {
-      newTheme = 'light';
-    }
-    updateSettings({ theme: newTheme });
-  };
 
   const getCurrentTheme = (): 'light' | 'dark' => {
     if (theme === 'system') {
@@ -28,39 +16,61 @@ const ThemeModeToggle = () => {
 
   const isDark = getCurrentTheme() === 'dark';
 
+  const handleThemeChange = (newTheme: 'light' | 'dark' | 'system') => {
+    updateSettings({ theme: newTheme });
+  };
+
+  const getIcon = () => {
+    if (theme === 'system') {
+      return <IconDeviceDesktop size={20} />;
+    }
+    return isDark ? <IconSun size={20} /> : <IconMoon size={20} />;
+  };
+
   return (
-    <Tooltip
-      label={
-        theme === 'system'
-          ? `System (${isDark ? 'Dark' : 'Light'}) - Click to change`
-          : isDark
-            ? 'Switch to light mode'
-            : 'Switch to dark mode'
-      }
-      withArrow
-    >
-      <UnstyledButton
-        onClick={toggleTheme}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: 36,
-          height: 36,
-          borderRadius: 'var(--mantine-radius-sm)',
-          color: 'var(--mantine-color-text)',
-        }}
-        styles={{
-          root: {
-            '&:hover': {
-              backgroundColor: 'var(--mantine-color-default-hover)',
-            },
-          },
-        }}
-      >
-        {isDark ? <IconSun size={20} /> : <IconMoon size={20} />}
-      </UnstyledButton>
-    </Tooltip>
+    <Menu shadow="md" width={160}>
+      <Menu.Target>
+        <button
+          className="btn btn-icon size-9 hover:bg-default-150 rounded-full cursor-pointer flex items-center justify-center transition-colors"
+          type="button"
+        >
+          {getIcon()}
+        </button>
+      </Menu.Target>
+
+      <Menu.Dropdown>
+        <Menu.Item
+          leftSection={<IconSun size={18} />}
+          onClick={() => handleThemeChange('light')}
+          style={{
+            backgroundColor: theme === 'light' ? 'var(--sidebar-active)' : undefined,
+            fontWeight: theme === 'light' ? 600 : undefined,
+          }}
+        >
+          Light
+        </Menu.Item>
+        <Menu.Item
+          leftSection={<IconMoon size={18} />}
+          onClick={() => handleThemeChange('dark')}
+          style={{
+            backgroundColor: theme === 'dark' ? 'var(--sidebar-active)' : undefined,
+            fontWeight: theme === 'dark' ? 600 : undefined,
+          }}
+        >
+          Dark
+        </Menu.Item>
+        <Menu.Item
+          leftSection={<IconDeviceDesktop size={18} />}
+          onClick={() => handleThemeChange('system')}
+          style={{
+            backgroundColor: theme === 'system' ? 'var(--sidebar-active)' : undefined,
+            fontWeight: theme === 'system' ? 600 : undefined,
+          }}
+        >
+          System
+        </Menu.Item>
+      </Menu.Dropdown>
+    </Menu>
   );
 };
 

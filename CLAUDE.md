@@ -59,7 +59,7 @@ npm run prettier            # Format all files with Prettier
 ### Authentication Flow
 The app uses NextAuth with custom authentication:
 1. **Middleware** (`proxy.ts`): Protects routes, redirects unauthenticated users
-2. **Session Management**: Uses NextAuth JWT tokens with custom session data including permissions
+2. **Session Management**: Uses NextAuth JWT tokens with custom session data including permissions. session object is saved in `types/next-auth.d.ts`
 3. **AuthProvider** (`app/[locale]/layout.tsx`): Wraps app with session context
 4. Protected routes require valid session; auth pages redirect authenticated users to dashboard
 

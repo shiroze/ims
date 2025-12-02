@@ -1,0 +1,245 @@
+/* Theme CSS Variables and Styles */
+
+/* Base Light Theme */
+:root,
+[data-theme="light"] {
+  /* Colors */
+  --color-primary: #3b82f6;
+  --color-primary-hover: #2563eb;
+  --color-background: #ffffff;
+  --color-foreground: #171717;
+  --color-surface: #f9fafb;
+  --color-border: #e5e7eb;
+  --color-text: #374151;
+  --color-text-muted: #6b7280;
+
+  /* Topbar */
+  --topbar-background: #ffffff;
+  --topbar-text: #374151;
+  --topbar-border: #e5e7eb;
+
+  /* Sidebar */
+  --sidebar-background: #ffffff;
+  --sidebar-text: #374151;
+  --sidebar-border: #e5e7eb;
+  --sidebar-hover: #f3f4f6;
+  --sidebar-active: #eff6ff;
+
+  /* Content */
+  --content-background: #f9fafb;
+
+  /* Mantine color scheme */
+  --mantine-color-body: #ffffff;
+  --mantine-color-text: #171717;
+  --mantine-color-default-border: #e5e7eb;
+  --mantine-color-default: #f9fafb;
+  --mantine-color-default-hover: #f3f4f6;
+  color-scheme: light;
+}
+
+/* Dark Theme */
+[data-theme="dark"] {
+  /* Colors */
+  --color-primary: #60a5fa;
+  --color-primary-hover: #3b82f6;
+  --color-background: #0a0a0a;
+  --color-foreground: #ededed;
+  --color-surface: #1a1a1a;
+  --color-border: #2a2a2a;
+  --color-text: #e5e7eb;
+  --color-text-muted: #9ca3af;
+
+  /* Topbar */
+  --topbar-background: #1a1a1a;
+  --topbar-text: #e5e7eb;
+  --topbar-border: #2a2a2a;
+
+  /* Sidebar */
+  --sidebar-background: #1a1a1a;
+  --sidebar-text: #e5e7eb;
+  --sidebar-border: #2a2a2a;
+  --sidebar-hover: #2a2a2a;
+  --sidebar-active: #1e3a8a;
+
+  /* Content */
+  --content-background: #0a0a0a;
+
+  /* Mantine color scheme */
+  --mantine-color-body: #0a0a0a;
+  --mantine-color-text: #ededed;
+  --mantine-color-default-border: #2a2a2a;
+  --mantine-color-default: #1a1a1a;
+  --mantine-color-default-hover: #2a2a2a;
+  color-scheme: dark;
+}
+
+/* Smooth transitions for theme changes */
+html {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Topbar styles */
+.app-header {
+  background-color: var(--topbar-background);
+  color: var(--topbar-text);
+  border-bottom-color: var(--topbar-border);
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Sidebar styles */
+.app-sidebar {
+  background-color: var(--sidebar-background);
+  color: var(--sidebar-text);
+  border-right-color: var(--sidebar-border);
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Content area */
+.app-content {
+  background-color: var(--content-background);
+  transition: background-color 0.3s ease;
+}
+
+/* Button hover states */
+.btn-icon:hover {
+  background-color: var(--sidebar-hover);
+}
+
+/* Theme toggle dropdown */
+.theme-toggle-dropdown {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.theme-toggle-item {
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  color: var(--color-text);
+}
+
+.theme-toggle-item:hover {
+  background-color: var(--sidebar-hover);
+}
+
+.theme-toggle-item.active {
+  background-color: var(--sidebar-active);
+  font-weight: 600;
+}
+
+/* Mantine component overrides for theme support */
+.mantine-Menu-dropdown {
+  background-color: var(--mantine-color-body) !important;
+  border-color: var(--mantine-color-default-border) !important;
+}
+
+.mantine-Menu-item {
+  color: var(--mantine-color-text) !important;
+}
+
+.mantine-Menu-item:hover {
+  background-color: var(--mantine-color-default-hover) !important;
+}
+
+.mantine-NavLink-root {
+  color: var(--sidebar-text) !important;
+}
+
+.mantine-NavLink-root:hover {
+  background-color: var(--sidebar-hover) !important;
+}
+
+.mantine-NavLink-root[data-active] {
+  background-color: var(--sidebar-active) !important;
+}
+
+.mantine-TextInput-input {
+  background-color: var(--mantine-color-default) !important;
+  border-color: var(--mantine-color-default-border) !important;
+  color: var(--mantine-color-text) !important;
+}
+
+.mantine-ScrollArea-root {
+  background-color: transparent !important;
+}
+
+/* Filterable Table wrapper */
+.filterable-table-wrapper {
+  background-color: var(--mantine-color-body);
+  border-color: var(--mantine-color-default-border);
+}
+
+/* Mantine React Table theme support */
+.mantine-Table-table {
+  background-color: var(--mantine-color-body) !important;
+  color: var(--mantine-color-text) !important;
+}
+
+.mantine-Table-thead {
+  background-color: var(--color-surface) !important;
+}
+
+.mantine-Table-th {
+  background-color: var(--color-surface) !important;
+  color: var(--color-text) !important;
+  border-color: var(--mantine-color-default-border) !important;
+}
+
+.mantine-Table-tr {
+  border-color: var(--mantine-color-default-border) !important;
+}
+
+.mantine-Table-td {
+  background-color: var(--mantine-color-body) !important;
+  color: var(--mantine-color-text) !important;
+  border-color: var(--mantine-color-default-border) !important;
+}
+
+.mantine-Table-tr:hover .mantine-Table-td {
+  background-color: var(--mantine-color-default-hover) !important;
+}
+
+/* Mantine React Table specific classes */
+.mantine-Paper-root {
+  background-color: var(--mantine-color-body) !important;
+  border-color: var(--mantine-color-default-border) !important;
+  color: var(--mantine-color-text) !important;
+}
+
+.mantine-ActionIcon-root {
+  color: var(--mantine-color-text) !important;
+}
+
+.mantine-ActionIcon-root:hover {
+  background-color: var(--mantine-color-default-hover) !important;
+}
+
+.mantine-Select-input,
+.mantine-Input-input {
+  background-color: var(--mantine-color-default) !important;
+  border-color: var(--mantine-color-default-border) !important;
+  color: var(--mantine-color-text) !important;
+}
+
+.mantine-Pagination-control {
+  background-color: var(--mantine-color-default) !important;
+  border-color: var(--mantine-color-default-border) !important;
+  color: var(--mantine-color-text) !important;
+}
+
+.mantine-Pagination-control:hover {
+  background-color: var(--mantine-color-default-hover) !important;
+}
+
+.mantine-Pagination-control[data-active] {
+  background-color: var(--color-primary) !important;
+  color: white !important;
+}
